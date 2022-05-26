@@ -1,5 +1,8 @@
 package funkin;
 
+import flixel.math.FlxMath;
+import states.PlayState;
+import base.Conductor;
 import base.ScriptHandler.ForeverModule;
 import base.ScriptHandler;
 import flixel.FlxSprite;
@@ -62,9 +65,28 @@ class Strumline extends FlxSpriteGroup
 		add(notesGroup);
 	}
 
-	public function createNote(beatTime:Float, index:Int, noteType:String)
+	public function createNote(beatTime:Float, index:Int, noteType:String, ?holdLength:Float, isHold:Bool = false, ?prevNote:Note)
 	{
 		var newNote:Note = new Note(beatTime, index, noteType);
+
+		// make holds from the note
+		if (holdLength != null && holdLength > 0)
+		{
+			var length:Int = Math.floor(holdLength / Conductor.stepCrochet);
+			if (length > 0)
+			{
+				// i hate this so much
+				var daCrochet:Float = Conductor.stepCrochet / 153;
+				var roundedSpeed:Float = FlxMath.roundDecimal(PlayState.song.speed, 2);
+				for (note in 0...length)
+				{
+					var oldNote:Note = notesGroup.members[notesGroup.length - 1];
+					var newHold:Note = new Note(beatTime + daCrochet * note + daCrochet / roundedSpeed, index, noteType, true, oldNote);
+					notesGroup.add(newHold);
+				}
+			}
+		}
+
 		notesGroup.add(newNote);
 	}
 }

@@ -183,7 +183,7 @@ class PlayState extends MusicBeatState
 			{
 				// add the note to the corresponding strumline
 				// trace('note at time ${unspawnNote.beatTime}');
-				strumlines.members[unspawnNote.strumline].createNote(unspawnNote.beatTime, unspawnNote.index, unspawnNote.type);
+				strumlines.members[unspawnNote.strumline].createNote(unspawnNote.beatTime, unspawnNote.index, unspawnNote.type, unspawnNote.holdBeat);
 			}, -4500);
 
 			// control notes
@@ -195,9 +195,9 @@ class PlayState extends MusicBeatState
 					var baseY = strumline.receptors.members[Math.floor(strumNote.noteData)].y;
 					var baseX = strumline.receptors.members[Math.floor(strumNote.noteData)].x;
 
-					strumNote.x = baseX;
+					strumNote.x = baseX + strumNote.offsetX;
 					var roundedSpeed = FlxMath.roundDecimal(song.speed, 2);
-					strumNote.y = baseY
+					strumNote.y = baseY + strumNote.offsetY
 						+ (downscrollMultiplier * -((Conductor.songPosition - (strumNote.beatTime * Conductor.stepCrochet)) * (0.45 * roundedSpeed)));
 				});
 			}
