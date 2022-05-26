@@ -153,6 +153,9 @@ class PlayState extends MusicBeatState
 	{
 		super.update(elapsed);
 
+		if (FlxG.keys.justPressed.SEVEN)
+			FlxG.resetGame();
+
 		var lerpVal:Float = (elapsed * 2.4) * cameraSpeed; // cval
 		camFollowPos.setPosition(FlxMath.lerp(camFollowPos.x, camFollow.x, lerpVal), FlxMath.lerp(camFollowPos.y, camFollow.y, lerpVal));
 
@@ -300,7 +303,7 @@ class PlayState extends MusicBeatState
 					if (action == receptor.action)
 					{
 						// placeholder
-						trace(action);
+						// trace(action);
 						receptor.animation.play('pressed');
 					}
 				}
@@ -323,7 +326,7 @@ class PlayState extends MusicBeatState
 					if (action == receptor.action)
 					{
 						// placeholder
-						trace(action);
+						// trace(action);
 						receptor.animation.play('static');
 					}
 				}
