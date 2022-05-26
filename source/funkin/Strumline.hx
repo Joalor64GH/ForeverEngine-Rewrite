@@ -74,9 +74,9 @@ typedef ReceptorData =
 	var keyAmount:Int;
 	var actions:Array<String>;
 	var colors:Array<String>;
-	var separation:Float;
-	var size:Float;
-	var antialiasing:Bool;
+	var ?separation:Float;
+	var ?size:Float;
+	var ?antialiasing:Bool;
 }
 
 class Receptor extends FlxSprite

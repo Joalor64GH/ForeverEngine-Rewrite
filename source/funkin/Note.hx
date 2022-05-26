@@ -55,7 +55,17 @@ class Note extends OffsettedSprite
 		if (!dataCache.exists(noteType))
 		{
 			trace('setting note data $noteType');
-			dataCache.set(noteType, cast Json.parse(AssetManager.getAsset(noteType, JSON, 'notetypes/$noteType')));
+			var leType:ReceptorData = cast Json.parse(AssetManager.getAsset(noteType, JSON, 'notetypes/$noteType'));
+
+			// check for null values
+			if (leType.separation == null)
+				leType.separation = 160;
+			if (leType.size == null)
+				leType.size = 0.7;
+			if (leType.antialiasing == null)
+				leType.antialiasing = true;
+
+			dataCache.set(noteType, leType);
 		}
 		return dataCache.get(noteType);
 	}

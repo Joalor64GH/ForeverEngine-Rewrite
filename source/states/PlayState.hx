@@ -153,9 +153,6 @@ class PlayState extends MusicBeatState
 	{
 		super.update(elapsed);
 
-		if (FlxG.keys.justPressed.SEVEN)
-			FlxG.resetGame();
-
 		var lerpVal:Float = (elapsed * 2.4) * cameraSpeed; // cval
 		camFollowPos.setPosition(FlxMath.lerp(camFollowPos.x, camFollow.x, lerpVal), FlxMath.lerp(camFollowPos.y, camFollow.y, lerpVal));
 
