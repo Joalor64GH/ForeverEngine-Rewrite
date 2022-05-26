@@ -84,7 +84,7 @@ class PlayState extends MusicBeatState
 		camHUD.bgColor.alpha = 0;
 		FlxG.cameras.add(camHUD);
 
-		song = ChartParser.loadChart(this, "dadbattle", 2, FNF_LEGACY);
+		song = ChartParser.loadChart(this, "bopeebo", 2, FNF_LEGACY);
 
 		Conductor.boundSong.play();
 		Conductor.boundVocals.play();
@@ -187,7 +187,7 @@ class PlayState extends MusicBeatState
 			}, -4500);
 
 			// control notes
-			var downscrollMultiplier:Int = 1;
+			var roundedSpeed:Float = FlxMath.roundDecimal(song.speed, 2);
 			for (strumline in strumlines)
 			{
 				strumline.notesGroup.forEachAlive(function(strumNote:Note)
@@ -196,9 +196,8 @@ class PlayState extends MusicBeatState
 					var baseX = strumline.receptors.members[Math.floor(strumNote.noteData)].x;
 
 					strumNote.x = baseX + strumNote.offsetX;
-					var roundedSpeed = FlxMath.roundDecimal(song.speed, 2);
 					strumNote.y = baseY + strumNote.offsetY
-						+ (downscrollMultiplier * -((Conductor.songPosition - (strumNote.beatTime * Conductor.stepCrochet)) * (0.45 * roundedSpeed)));
+						+ -((Conductor.songPosition - (strumNote.beatTime * Conductor.stepCrochet)) * (0.45 * roundedSpeed));
 				});
 			}
 		}
