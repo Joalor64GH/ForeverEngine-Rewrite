@@ -23,7 +23,7 @@ class Strumline extends FlxSpriteGroup
 	public var autoplay:Bool = true;
 	public var displayJudgement:Bool = false;
 
-	public var allNotes:Array<Note> = [];
+	public var allNotes:FlxTypedSpriteGroup<Note>;
 	public var holdsGroup:FlxTypedSpriteGroup<Note>;
 	public var notesGroup:FlxTypedSpriteGroup<Note>;
 	public var receptorData:ReceptorData;
@@ -38,6 +38,7 @@ class Strumline extends FlxSpriteGroup
 		this.autoplay = autoplay;
 		this.displayJudgement = displayJudgement;
 
+		allNotes = new FlxTypedSpriteGroup<Note>();
 		holdsGroup = new FlxTypedSpriteGroup<Note>();
 		notesGroup = new FlxTypedSpriteGroup<Note>();
 
@@ -73,7 +74,7 @@ class Strumline extends FlxSpriteGroup
 	{
 		var oldNote:Note;
 		if (allNotes.length > 0)
-			oldNote = allNotes[Std.int(allNotes.length - 1)];
+			oldNote = allNotes.members[Std.int(allNotes.length - 1)];
 		else
 			oldNote = null;
 
@@ -90,18 +91,19 @@ class Strumline extends FlxSpriteGroup
 				var coolCrochet:Float = Conductor.stepCrochet / 125;
 				for (susNote in 0...(length + 1))
 				{
-					oldNote = allNotes[allNotes.length - 1];
+					oldNote = allNotes.members[allNotes.length - 1];
 
 					var newHold:Note = new Note(beatTime + coolCrochet * susNote + coolCrochet / roundedSpeed, index, noteType, oldNote, true);
+					// best thing i can do for make scroll consistant
 					if (susNote > 0)
-						newHold.offsetY -= (13 + roundedSpeed * 5) * roundedSpeed * susNote;
-					allNotes.push(newHold);
+						newHold.offsetY -= (13 + roundedSpeed / 1.9 * 5) * roundedSpeed * susNote;
+					allNotes.add(newHold);
 					holdsGroup.add(newHold);
 				}
 			}
 		}
 
-		allNotes.push(newNote);
+		allNotes.add(newNote);
 		notesGroup.add(newNote);
 	}
 }

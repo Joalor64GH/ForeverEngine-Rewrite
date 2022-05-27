@@ -197,13 +197,13 @@ class PlayState extends MusicBeatState
 			var roundedSpeed:Float = FlxMath.roundDecimal(song.speed, 2);
 			for (strumline in strumlines)
 			{
-				for (strumNote in strumline.allNotes)
+				strumline.allNotes.forEachAlive(function(strumNote:Note)
 				{
 					strumNote.x = strumline.receptors.members[Math.floor(strumNote.noteData)].x + strumNote.offsetX;
 					strumNote.y = strumline.receptors.members[Math.floor(strumNote.noteData)].y
 						+ strumNote.offsetY
 						+ downscrollMultiplier * -((Conductor.songPosition - (strumNote.beatTime * Conductor.stepCrochet)) * (0.45 * roundedSpeed));
-				}
+				});
 			}
 		}
 	}
