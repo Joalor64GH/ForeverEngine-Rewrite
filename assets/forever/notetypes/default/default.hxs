@@ -9,19 +9,33 @@ function generateReceptor() {
 
 function generateNote() {
 	note.frames = getAsset('NOTE_assets', 'sparrow');
-	note.animation.addByPrefix('greenScroll', 'green0');
-	note.animation.addByPrefix('redScroll', 'red0');
-	note.animation.addByPrefix('blueScroll', 'blue0');
-	note.animation.addByPrefix('purpleScroll', 'purple0');
-	note.animation.addByPrefix('purpleholdend', 'pruple end hold');
-	note.animation.addByPrefix('greenholdend', 'green hold end');
-	note.animation.addByPrefix('redholdend', 'red hold end');
-	note.animation.addByPrefix('blueholdend', 'blue hold end');
-	note.animation.addByPrefix('purplehold', 'purple hold piece');
-	note.animation.addByPrefix('greenhold', 'green hold piece');
-	note.animation.addByPrefix('redhold', 'red hold piece');
-	note.animation.addByPrefix('bluehold', 'blue hold piece');
+	if (!note.isHold) {
+		note.animation.addByPrefix('greenScroll', 'green0');
+		note.animation.addByPrefix('redScroll', 'red0');
+		note.animation.addByPrefix('blueScroll', 'blue0');
+		note.animation.addByPrefix('purpleScroll', 'purple0');
+	} else {
+		note.animation.addByPrefix('purpleholdend', 'pruple end hold');
+		note.animation.addByPrefix('greenholdend', 'green hold end');
+		note.animation.addByPrefix('redholdend', 'red hold end');
+		note.animation.addByPrefix('blueholdend', 'blue hold end');
+		note.animation.addByPrefix('purplehold', 'purple hold piece');
+		note.animation.addByPrefix('greenhold', 'green hold piece');
+		note.animation.addByPrefix('redhold', 'red hold piece');
+		note.animation.addByPrefix('bluehold', 'blue hold piece');
+	}
 
 	var stringSect:String = getNoteColor();
-	note.animation.play(stringSect+'Scroll');
+	if (!note.isHold)
+		note.animation.play(stringSect+'Scroll');
+	else if (note.prevNote != null) {
+		note.alpha = 0.6;
+		note.offsetX = note.offsetX + note.width / 2;
+		note.animation.play(stringSect+'holdend');
+		note.updateHitbox();
+		note.offsetX = note.offsetX - note.width / 1.25;
+		if (note.prevNote.isHold) {
+			note.prevNote.animation.play(note.prevNote.getNoteColor()+'hold');
+		}
+	}
 }

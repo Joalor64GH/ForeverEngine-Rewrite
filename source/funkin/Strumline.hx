@@ -1,5 +1,8 @@
 package funkin;
 
+import flixel.math.FlxMath;
+import states.PlayState;
+import base.Conductor;
 import base.ScriptHandler.ForeverModule;
 import base.ScriptHandler;
 import base.ForeverDependencies.OffsettedSprite;
@@ -21,6 +24,8 @@ class Strumline extends FlxSpriteGroup
 	public var autoplay:Bool = true;
 	public var displayJudgement:Bool = false;
 
+	public var allNotes:FlxTypedSpriteGroup<Note>;
+	public var holdsGroup:FlxTypedSpriteGroup<Note>;
 	public var notesGroup:FlxTypedSpriteGroup<Note>;
 	public var receptorData:ReceptorData;
 
@@ -34,6 +39,8 @@ class Strumline extends FlxSpriteGroup
 		this.autoplay = autoplay;
 		this.displayJudgement = displayJudgement;
 
+		allNotes = new FlxTypedSpriteGroup<Note>();
+		holdsGroup = new FlxTypedSpriteGroup<Note>();
 		notesGroup = new FlxTypedSpriteGroup<Note>();
 
 		// load receptor data
@@ -61,12 +68,44 @@ class Strumline extends FlxSpriteGroup
 			receptors.add(receptor);
 		}
 		add(receptors);
+		add(holdsGroup);
 		add(notesGroup);
 	}
 
-	public function createNote(beatTime:Float, index:Int, noteType:String)
+	public function createNote(beatTime:Float, index:Int, noteType:String, ?holdLength:Float, isHold:Bool = false, ?prevNote:Note)
 	{
-		var newNote:Note = new Note(beatTime, index, noteType);
+		var oldNote:Note;
+		if (allNotes.length > 0)
+			oldNote = allNotes.members[Std.int(allNotes.length - 1)];
+		else
+			oldNote = null;
+
+		var newNote:Note = new Note(beatTime, index, noteType, oldNote);
+
+		// make holds from the note
+		if (holdLength != null && holdLength > 0)
+		{
+			var length:Int = Math.floor(holdLength / Conductor.stepCrochet);
+			if (length > 0)
+			{
+				// i hate this so much
+				var roundedSpeed:Float = FlxMath.roundDecimal(PlayState.song.speed, 2);
+				var coolCrochet:Float = Conductor.stepCrochet / 125;
+				for (susNote in 0...(length + 1))
+				{
+					oldNote = allNotes.members[allNotes.length - 1];
+
+					var newHold:Note = new Note(beatTime + coolCrochet * susNote + coolCrochet / roundedSpeed, index, noteType, oldNote, true);
+					// best thing i can do for make scroll consistant
+					if (susNote > 0)
+						newHold.offsetY -= (13 + roundedSpeed / 1.9 * 5) * roundedSpeed * susNote;
+					allNotes.add(newHold);
+					holdsGroup.add(newHold);
+				}
+			}
+		}
+
+		allNotes.add(newNote);
 		notesGroup.add(newNote);
 	}
 }

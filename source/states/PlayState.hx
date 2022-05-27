@@ -21,6 +21,8 @@ import funkin.Strumline.Receptor;
 import funkin.Strumline;
 import funkin.UI;
 
+using StringTools;
+
 class PlayState extends MusicBeatState
 {
 	private var camFollow:FlxObject;
@@ -45,6 +47,8 @@ class PlayState extends MusicBeatState
 	public var controlledStrumlines:Array<Strumline> = [];
 
 	public static var song(default, set):SongFormat;
+
+	var spawnTime:Float = 3000;
 
 	static function set_song(value:SongFormat):SongFormat
 	{
@@ -86,10 +90,9 @@ class PlayState extends MusicBeatState
 		camHUD.bgColor.alpha = 0;
 		FlxG.cameras.add(camHUD);
 
-		song = ChartParser.loadChart(this, "satin-panties", 2, FNF_LEGACY);
-
-		Conductor.boundSong.play();
-		Conductor.boundVocals.play();
+		song = ChartParser.loadChart(this, "dadbattle", 2, FNF_LEGACY);
+		if (song.speed < 1)
+			spawnTime /= FlxMath.roundDecimal(song.speed, 2);
 
 		// add stage
 		var stage:Stage = new Stage('stage', FOREVER);
@@ -149,6 +152,9 @@ class PlayState extends MusicBeatState
 		FlxG.camera.focusOn(camFollow.getPosition());
 
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
+
+		Conductor.boundSong.play();
+		Conductor.boundVocals.play();
 	}
 
 	override public function update(elapsed:Float)
@@ -185,22 +191,20 @@ class PlayState extends MusicBeatState
 			{
 				// add the note to the corresponding strumline
 				// trace('note at time ${unspawnNote.beatTime}');
-				strumlines.members[unspawnNote.strumline].createNote(unspawnNote.beatTime, unspawnNote.index, unspawnNote.type);
-			}, -4500);
+				strumlines.members[unspawnNote.strumline].createNote(unspawnNote.beatTime, unspawnNote.index, unspawnNote.type, unspawnNote.holdBeat);
+			}, -spawnTime);
 
 			// control notes
 			var downscrollMultiplier:Int = 1;
+			var roundedSpeed:Float = FlxMath.roundDecimal(song.speed, 2);
 			for (strumline in strumlines)
 			{
-				strumline.notesGroup.forEachAlive(function(strumNote:Note)
+				strumline.allNotes.forEachAlive(function(strumNote:Note)
 				{
-					var baseY = strumline.receptors.members[Math.floor(strumNote.noteData)].y;
-					var baseX = strumline.receptors.members[Math.floor(strumNote.noteData)].x;
-
-					strumNote.x = baseX;
-					var roundedSpeed = FlxMath.roundDecimal(song.speed, 2);
-					strumNote.y = baseY
-						+ (downscrollMultiplier * -((Conductor.songPosition - (strumNote.beatTime * Conductor.stepCrochet)) * (0.45 * roundedSpeed)));
+					strumNote.x = strumline.receptors.members[Math.floor(strumNote.noteData)].x + strumNote.offsetX;
+					strumNote.y = strumline.receptors.members[Math.floor(strumNote.noteData)].y
+						+ strumNote.offsetY
+						+ downscrollMultiplier * -((Conductor.songPosition - (strumNote.beatTime * Conductor.stepCrochet)) * (0.45 * roundedSpeed));
 				});
 			}
 

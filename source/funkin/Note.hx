@@ -1,5 +1,7 @@
 package funkin;
 
+import flixel.math.FlxMath;
+import states.PlayState;
 import base.Conductor;
 import base.ForeverDependencies.OffsettedSprite;
 import base.ScriptHandler.ForeverModule;
@@ -12,6 +14,12 @@ class Note extends OffsettedSprite
 	public var noteData:Int;
 	public var beatTime:Float;
 
+	public var isHold:Bool;
+	public var prevNote:Note;
+
+	public var offsetX:Float = 0;
+	public var offsetY:Float = 0;
+
 	public var tooLate:Bool = false;
 
 	public var canBeHit:Bool = false;
@@ -22,10 +30,15 @@ class Note extends OffsettedSprite
 	public var receptorData:ReceptorData;
 	public var noteModule:ForeverModule;
 
-	public function new(beatTime:Float, index:Int, noteType:String)
+	public function new(beatTime:Float, index:Int, noteType:String, ?prevNote:Note, isHold:Bool = false)
 	{
+		if (prevNote == null)
+			prevNote = this;
+
 		noteData = index;
 		this.beatTime = beatTime;
+		this.isHold = isHold;
+		this.prevNote = prevNote;
 
 		super();
 
@@ -49,6 +62,14 @@ class Note extends OffsettedSprite
 		setGraphicSize(Std.int(width * receptorData.size));
 		updateHitbox();
 		antialiasing = receptorData.antialiasing;
+
+		if (isHold && prevNote != null && prevNote.isHold)
+		{
+			prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5;
+			if (PlayState.song != null)
+				prevNote.scale.y *= FlxMath.roundDecimal(PlayState.song.speed, 2);
+			prevNote.updateHitbox();
+		}
 	}
 
 	public static function returnNoteData(noteType:String):ReceptorData
