@@ -13,6 +13,8 @@ import haxe.Json;
 import haxe.ds.StringMap;
 import sys.io.File;
 
+using StringTools;
+
 class Strumline extends FlxSpriteGroup
 {
 	public var receptors:FlxTypedSpriteGroup<Receptor>;
@@ -77,24 +79,28 @@ class Strumline extends FlxSpriteGroup
 		super.update(elasped);
 
 		if (autoplay)
-			notesGroup.forEachAlive(function(strumNote:Note)
+			allNotes.forEachAlive(function(strumNote:Note)
 			{
-				if (Math.abs(Conductor.songPosition - strumNote.beatTime * Conductor.stepCrochet) < 25)
+				if (!strumNote.wasGoodHit && Math.abs(Conductor.songPosition - strumNote.beatTime * Conductor.stepCrochet) < 25)
 				{
-					removeNote(strumNote);
-
-					var action:String = Receptor.actionList[strumNote.noteData];
-					receptors.forEachAlive(function(receptor:Receptor)
+					strumNote.wasGoodHit = true;
+					if (!strumNote.isHold || !strumNote.animation.name.endsWith('holdend'))
 					{
-						if (action == receptor.action)
+						var action:String = Receptor.actionList[strumNote.noteData];
+						receptors.forEachAlive(function(receptor:Receptor)
 						{
-							receptor.playAnim('confirm', true);
-							receptor.animation.finishCallback = function(name:String)
+							if (action == receptor.action)
 							{
-								receptor.playAnim('static');
+								receptor.playAnim('confirm', true);
+								receptor.animation.finishCallback = function(name:String)
+								{
+									receptor.playAnim('static');
+								}
 							}
-						}
-					});
+						});
+					}
+
+					removeNote(strumNote);
 				}
 			});
 	}
