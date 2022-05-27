@@ -23,6 +23,8 @@ class Strumline extends FlxSpriteGroup
 	public var autoplay:Bool = true;
 	public var displayJudgement:Bool = false;
 
+	public var allNotes:Array<Note> = [];
+	public var holdsGroup:FlxTypedSpriteGroup<Note>;
 	public var notesGroup:FlxTypedSpriteGroup<Note>;
 	public var receptorData:ReceptorData;
 
@@ -36,6 +38,7 @@ class Strumline extends FlxSpriteGroup
 		this.autoplay = autoplay;
 		this.displayJudgement = displayJudgement;
 
+		holdsGroup = new FlxTypedSpriteGroup<Note>();
 		notesGroup = new FlxTypedSpriteGroup<Note>();
 
 		// load receptor data
@@ -62,12 +65,19 @@ class Strumline extends FlxSpriteGroup
 			receptors.add(receptor);
 		}
 		add(receptors);
+		add(holdsGroup);
 		add(notesGroup);
 	}
 
 	public function createNote(beatTime:Float, index:Int, noteType:String, ?holdLength:Float, isHold:Bool = false, ?prevNote:Note)
 	{
-		var newNote:Note = new Note(beatTime, index, noteType);
+		var oldNote:Note;
+		if (allNotes.length > 0)
+			oldNote = allNotes[Std.int(allNotes.length - 1)];
+		else
+			oldNote = null;
+
+		var newNote:Note = new Note(beatTime, index, noteType, oldNote);
 
 		// make holds from the note
 		if (holdLength != null && holdLength > 0)
@@ -77,16 +87,21 @@ class Strumline extends FlxSpriteGroup
 			{
 				// i hate this so much
 				var roundedSpeed:Float = FlxMath.roundDecimal(PlayState.song.speed, 2);
-				var coolCrochet:Float = 0.45 * Conductor.stepCrochet / 100 * roundedSpeed;
-				for (note in 0...length + 1)
+				var coolCrochet:Float = Conductor.stepCrochet / 125;
+				for (susNote in 0...(length + 1))
 				{
-					var oldNote:Note = notesGroup.members[notesGroup.length - 1];
-					var newHold:Note = new Note(beatTime + coolCrochet * note + coolCrochet / roundedSpeed, index, noteType, true, oldNote);
-					notesGroup.add(newHold);
+					oldNote = allNotes[allNotes.length - 1];
+
+					var newHold:Note = new Note(beatTime + coolCrochet * susNote + coolCrochet / roundedSpeed, index, noteType, oldNote, true);
+					if (susNote > 0)
+						newHold.offsetY -= (13 + roundedSpeed * 5) * roundedSpeed * susNote;
+					allNotes.push(newHold);
+					holdsGroup.add(newHold);
 				}
 			}
 		}
 
+		allNotes.push(newNote);
 		notesGroup.add(newNote);
 	}
 }

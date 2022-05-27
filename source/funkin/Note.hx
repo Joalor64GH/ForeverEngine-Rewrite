@@ -28,8 +28,11 @@ class Note extends OffsettedSprite
 	public var receptorData:ReceptorData;
 	public var noteModule:ForeverModule;
 
-	public function new(beatTime:Float, index:Int, noteType:String, isHold:Bool = false, ?prevNote:Note)
+	public function new(beatTime:Float, index:Int, noteType:String, ?prevNote:Note, isHold:Bool = false)
 	{
+		if (prevNote == null)
+			prevNote = this;
+
 		noteData = index;
 		this.beatTime = beatTime;
 		this.isHold = isHold;
@@ -60,7 +63,7 @@ class Note extends OffsettedSprite
 
 		if (isHold && prevNote != null && prevNote.isHold)
 		{
-			prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.35;
+			prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5;
 			if (PlayState.song != null)
 				prevNote.scale.y *= FlxMath.roundDecimal(PlayState.song.speed, 2);
 			prevNote.updateHitbox();

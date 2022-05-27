@@ -21,6 +21,8 @@ import funkin.Strumline.Receptor;
 import funkin.Strumline;
 import funkin.UI;
 
+using StringTools;
+
 class PlayState extends MusicBeatState
 {
 	private var camFollow:FlxObject;
@@ -84,8 +86,9 @@ class PlayState extends MusicBeatState
 		camHUD.bgColor.alpha = 0;
 		FlxG.cameras.add(camHUD);
 
-		song = ChartParser.loadChart(this, "senpai", 2, FNF_LEGACY);
-		trace(song.speed);
+		song = ChartParser.loadChart(this, "bopeebo", 1, FNF_LEGACY);
+		if (song.speed < 1)
+			spawnTime /= FlxMath.roundDecimal(song.speed, 2);
 
 		Conductor.boundSong.play();
 		Conductor.boundVocals.play();
@@ -150,6 +153,8 @@ class PlayState extends MusicBeatState
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
 	}
 
+	var spawnTime:Float = 3000;
+
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
@@ -185,21 +190,20 @@ class PlayState extends MusicBeatState
 				// add the note to the corresponding strumline
 				// trace('note at time ${unspawnNote.beatTime}');
 				strumlines.members[unspawnNote.strumline].createNote(unspawnNote.beatTime, unspawnNote.index, unspawnNote.type, unspawnNote.holdBeat);
-			}, -4500);
+			}, -spawnTime);
 
 			// control notes
+			var downscrollMultiplier:Int = 1;
 			var roundedSpeed:Float = FlxMath.roundDecimal(song.speed, 2);
 			for (strumline in strumlines)
 			{
-				strumline.notesGroup.forEachAlive(function(strumNote:Note)
+				for (strumNote in strumline.allNotes)
 				{
-					var baseY = strumline.receptors.members[Math.floor(strumNote.noteData)].y;
-					var baseX = strumline.receptors.members[Math.floor(strumNote.noteData)].x;
-
-					strumNote.x = baseX + strumNote.offsetX;
-					strumNote.y = baseY + strumNote.offsetY
-						+ -((Conductor.songPosition - (strumNote.beatTime * Conductor.stepCrochet)) * (0.45 * roundedSpeed));
-				});
+					strumNote.x = strumline.receptors.members[Math.floor(strumNote.noteData)].x + strumNote.offsetX;
+					strumNote.y = strumline.receptors.members[Math.floor(strumNote.noteData)].y
+						+ strumNote.offsetY
+						+ downscrollMultiplier * -((Conductor.songPosition - (strumNote.beatTime * Conductor.stepCrochet)) * (0.45 * roundedSpeed));
+				}
 			}
 		}
 	}
