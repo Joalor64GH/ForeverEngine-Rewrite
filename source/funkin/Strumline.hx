@@ -72,6 +72,33 @@ class Strumline extends FlxSpriteGroup
 		add(notesGroup);
 	}
 
+	override function update(elasped:Float)
+	{
+		super.update(elasped);
+
+		if (autoplay)
+			notesGroup.forEachAlive(function(strumNote:Note)
+			{
+				if (Math.abs(Conductor.songPosition - strumNote.beatTime * Conductor.stepCrochet) < 25)
+				{
+					removeNote(strumNote);
+
+					var action:String = Receptor.actionList[strumNote.noteData];
+					receptors.forEachAlive(function(receptor:Receptor)
+					{
+						if (action == receptor.action)
+						{
+							receptor.playAnim('confirm', true);
+							receptor.animation.finishCallback = function(name:String)
+							{
+								receptor.playAnim('static');
+							}
+						}
+					});
+				}
+			});
+	}
+
 	public function createNote(beatTime:Float, index:Int, noteType:String, ?holdLength:Float, isHold:Bool = false, ?prevNote:Note)
 	{
 		var oldNote:Note;
@@ -81,6 +108,7 @@ class Strumline extends FlxSpriteGroup
 			oldNote = null;
 
 		var newNote:Note = new Note(beatTime, index, noteType, oldNote);
+		newNote.mustPress = !autoplay;
 
 		// make holds from the note
 		if (holdLength != null && holdLength > 0)
@@ -96,6 +124,7 @@ class Strumline extends FlxSpriteGroup
 					oldNote = allNotes.members[allNotes.length - 1];
 
 					var newHold:Note = new Note(beatTime + coolCrochet * susNote + coolCrochet / roundedSpeed, index, noteType, oldNote, true);
+					newHold.mustPress = !autoplay;
 					// best thing i can do for make scroll consistant
 					if (susNote > 0)
 						newHold.offsetY -= (13 + roundedSpeed / 1.9 * 5) * roundedSpeed * susNote;
@@ -107,6 +136,17 @@ class Strumline extends FlxSpriteGroup
 
 		allNotes.add(newNote);
 		notesGroup.add(newNote);
+	}
+
+	public function removeNote(note:Note)
+	{
+		note.kill();
+		allNotes.remove(note, true);
+		if (note.isHold)
+			holdsGroup.remove(note, true);
+		else
+			notesGroup.remove(note, true);
+		note.destroy();
 	}
 }
 
@@ -122,6 +162,8 @@ typedef ReceptorData =
 
 class Receptor extends FlxSprite
 {
+	public static var actionList:Array<String> = ['left', 'down', 'up', 'right'];
+
 	public var swagWidth:Float;
 
 	public var noteData:Int;
@@ -144,6 +186,21 @@ class Receptor extends FlxSprite
 		noteModule.interp.variables.set('getNoteDirection', getNoteDirection);
 		noteModule.interp.variables.set('getNoteColor', getNoteColor);
 		noteModule.get('generateReceptor')();
+	}
+
+	override function update(elasped:Float)
+	{
+		super.update(elasped);
+
+		if (animation.curAnim.name == 'confirm')
+			centerOrigin();
+	}
+
+	public function playAnim(name:String, force:Bool = false)
+	{
+		animation.play(name, force);
+		centerOffsets();
+		centerOrigin();
 	}
 
 	function getNoteDirection()

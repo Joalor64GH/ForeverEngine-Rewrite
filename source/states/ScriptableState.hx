@@ -13,6 +13,12 @@ class ScriptableState extends FlxUIState
 		Controls.onActionReleased.add(onActionReleased);
 	}
 
+	override function update(elasped:Float)
+	{
+		super.update(elasped);
+		Controls.update();
+	}
+
 	override function destroy()
 	{
 		Controls.onActionPressed.remove(onActionPressed);
@@ -32,6 +38,12 @@ class ScriptableSubState extends FlxUISubState
 		super.create();
 		Controls.onActionPressed.add(onActionPressed);
 		Controls.onActionReleased.add(onActionReleased);
+	}
+
+	override function update(elasped:Float)
+	{
+		super.update(elasped);
+		Controls.update();
 	}
 
 	override function destroy()

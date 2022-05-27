@@ -12,6 +12,7 @@ class UI extends FlxSpriteGroup
 {
 	private var healthBarBG:FlxSprite;
 	private var healthBar:FlxBar;
+
 	public var scoreBar:FlxText;
 
 	// in the future, this should be an option
@@ -23,7 +24,7 @@ class UI extends FlxSpriteGroup
 
 		var barY = FlxG.height * 0.875;
 		if (downscroll)
-			barY = 69; //funny number huh?
+			barY = 69; // funny number huh?
 
 		healthBarBG = new FlxSprite(0, barY).loadGraphic(AssetManager.getAsset('healthBar', IMAGE, 'UI'));
 		healthBarBG.screenCenter(X);

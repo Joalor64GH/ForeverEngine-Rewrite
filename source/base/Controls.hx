@@ -1,5 +1,7 @@
 package base;
 
+import flixel.input.gamepad.FlxGamepad;
+import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.FlxG;
 import haxe.ds.StringMap;
 import lime.app.Event;
@@ -23,13 +25,21 @@ class Controls
 		105 => "Numpad 9", 109 => "Numpad -", 107 => "Numpad +", 110 => "Numpad .", 106 => "Numpad *"
 	];
 
-	static var actions:StringMap<Array<Null<Int>>> = [
+	static var keyboardActions:StringMap<Array<Null<Int>>> = [
 		"left" => [Keyboard.LEFT, Keyboard.D],
 		"down" => [Keyboard.DOWN, Keyboard.F],
 		"up" => [Keyboard.UP, Keyboard.J],
 		"right" => [Keyboard.RIGHT, Keyboard.K],
-		"confirm" => [Keyboard.ENTER, null],
-		"back" => [Keyboard.ESCAPE, null]
+		"confirm" => [Keyboard.ENTER],
+		"back" => [Keyboard.ESCAPE]
+	];
+	static var gamepadActions:StringMap<Array<Null<FlxGamepadInputID>>> = [
+		"left" => [DPAD_LEFT, LEFT_STICK_DIGITAL_LEFT, Y],
+		"down" => [DPAD_DOWN, LEFT_STICK_DIGITAL_DOWN, X],
+		"up" => [DPAD_UP, LEFT_STICK_DIGITAL_UP, A],
+		"right" => [DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT, B],
+		"confirm" => [A, START],
+		"back" => [B]
 	];
 
 	static var keyPressed:Array<Int> = [];
@@ -38,6 +48,22 @@ class Controls
 	{
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
+	}
+
+	public static function update()
+	{
+		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
+		if (gamepad != null)
+		{
+			for (actionName => actionKeys in gamepadActions)
+			{
+				var key:Int = keyboardActions.get(actionName)[0];
+				if (gamepad.anyJustPressed(actionKeys) && !keyPressed.contains(key))
+					onKeyDown(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, -1, key));
+				if (gamepad.anyJustReleased(actionKeys) && keyPressed.contains(key))
+					onKeyUp(new KeyboardEvent(KeyboardEvent.KEY_UP, true, true, -1, key));
+			}
+		}
 	}
 
 	public static function keyCodeToString(keyCode:Null<Int>):String
@@ -50,7 +76,7 @@ class Controls
 
 	public static function isActionPressed(action:String):Bool
 	{
-		for (actionKey in actions.get(action))
+		for (actionKey in keyboardActions.get(action))
 		{
 			for (keyp in keyPressed)
 			{
@@ -64,7 +90,7 @@ class Controls
 
 	public static function getActionFromKey(key:Int):Null<String>
 	{
-		for (actionName => actionKeys in actions)
+		for (actionName => actionKeys in keyboardActions)
 		{
 			for (actionKey in actionKeys)
 			{

@@ -13,6 +13,7 @@ class Note extends OffsettedSprite
 {
 	public var noteData:Int;
 	public var beatTime:Float;
+	public var mustPress:Bool = false;
 
 	public var isHold:Bool;
 	public var prevNote:Note;
@@ -20,9 +21,8 @@ class Note extends OffsettedSprite
 	public var offsetX:Float = 0;
 	public var offsetY:Float = 0;
 
-	public var tooLate:Bool = false;
-
 	public var canBeHit:Bool = false;
+	public var tooLate:Bool = false;
 
 	public static var scriptCache:Map<String, ForeverModule> = [];
 	public static var dataCache:Map<String, ReceptorData> = [];
@@ -114,11 +114,7 @@ class Note extends OffsettedSprite
 	{
 		super.update(elapsed);
 
-		if (this.beatTime * Conductor.stepCrochet > Conductor.songPosition - Conductor.safeZoneOffset
-			&& this.beatTime * Conductor.stepCrochet < Conductor.songPosition + Conductor.safeZoneOffset) {
-				this.canBeHit = true;
-			}else {
-				this.canBeHit = false;
-			};
+		canBeHit = beatTime * Conductor.stepCrochet > Conductor.songPosition - Conductor.safeZoneOffset
+			&& beatTime * Conductor.stepCrochet < Conductor.songPosition + Conductor.safeZoneOffset;
 	}
 }

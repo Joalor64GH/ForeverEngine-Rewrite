@@ -207,14 +207,6 @@ class PlayState extends MusicBeatState
 						+ downscrollMultiplier * -((Conductor.songPosition - (strumNote.beatTime * Conductor.stepCrochet)) * (0.45 * roundedSpeed));
 				});
 			}
-
-			dadStrums.notesGroup.forEachAlive(function(strumNote:Note) {
-				if (strumNote.noteData < 4 && Math.abs(Conductor.songPosition - strumNote.beatTime * Conductor.stepCrochet) < 25) {
-					strumNote.kill();
-					dadStrums.notesGroup.remove(strumNote, true);
-					strumNote.destroy();
-				}
-			});
 		}
 	}
 
@@ -297,79 +289,59 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	// CONTROLS
-	public static var receptorActionList:Array<String> = ['left', 'down', 'up', 'right'];
-
 	override public function onActionPressed(action:String)
 	{
 		super.onActionPressed(action);
-		if (receptorActionList.contains(action))
+		if (Receptor.actionList.contains(action))
 		{
-			// find the right receptor(s) within the controlled strumlines
 			for (strumline in controlledStrumlines)
 			{
-				for (receptor in strumline.receptors)
+				strumline.receptors.forEachAlive(function(receptor:Receptor)
 				{
-
-					// if this is the specified action
 					if (action == receptor.action)
 					{
-						var pressNotes:Array<Note> = [];
+						// var pressNotes:Array<Note> = [];
 						var sortedNotesList:Array<Note> = [];
-						var notesStopped:Bool = false;
+						// var notesStopped:Bool = false;
 
-						strumline.notesGroup.forEachAlive(function(strumNote:Note){
-							if (strumNote.noteData == receptor.noteData && strumNote.canBeHit) {
+						strumline.notesGroup.forEachAlive(function(strumNote:Note)
+						{
+							if (strumNote.noteData == receptor.noteData && strumNote.canBeHit)
 								sortedNotesList.push(strumNote);
-							};
 						});
-						
+
 						sortedNotesList.sort((a, b) -> Std.int(a.beatTime * Conductor.stepCrochet - b.beatTime * Conductor.stepCrochet));
 
-						if (sortedNotesList.length > 0) {
-							sortedNotesList[0].kill();
-							strumline.notesGroup.remove(sortedNotesList[0], true);
-							sortedNotesList[0].destroy();
-
-							receptor.animation.play('confirm');
-							receptor.offset.set(0 + receptor.width / 4 + 27, 0 + receptor.height / 4 + 30);
-
-							boyfriend.playAnim('sing'+receptorActionList[receptor.noteData].toUpperCase());
-
+						if (sortedNotesList.length > 0)
+						{
+							strumline.removeNote(sortedNotesList[0]);
+							receptor.playAnim('confirm', true);
+							boyfriend.playAnim('sing' + Receptor.actionList[receptor.noteData].toUpperCase());
 							songScore += 350;
-						} else {
-							receptor.animation.play('pressed');
-							//receptor.offset.x = 0;
-						};
-						
+						}
+						else
+							receptor.playAnim('pressed');
 					}
-				}
+				});
 			}
 		}
-		//
 	}
 
 	override public function onActionReleased(action:String)
 	{
 		super.onActionReleased(action);
-		if (receptorActionList.contains(action))
+		if (Receptor.actionList.contains(action))
 		{
 			// find the right receptor(s) within the controlled strumlines
 			for (strumline in controlledStrumlines)
 			{
-				for (receptor in strumline.receptors)
+				strumline.receptors.forEachAlive(function(receptor:Receptor)
 				{
 					// if this is the specified action
 					if (action == receptor.action)
-					{
-						// placeholder
-						// trace(action);
-						receptor.animation.play('static');
-						receptor.offset.set(0 + receptor.width / 4 - 2, 0 + receptor.height / 4);
-					}
-				}
+						receptor.playAnim('static');
+				});
 			}
 		}
-		//
 	}
 }
