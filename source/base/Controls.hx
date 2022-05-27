@@ -34,10 +34,10 @@ class Controls
 		"back" => [Keyboard.ESCAPE]
 	];
 	static var gamepadActions:StringMap<Array<Null<FlxGamepadInputID>>> = [
-		"left" => [DPAD_LEFT, LEFT_STICK_DIGITAL_LEFT, Y],
-		"down" => [DPAD_DOWN, LEFT_STICK_DIGITAL_DOWN, X],
-		"up" => [DPAD_UP, LEFT_STICK_DIGITAL_UP, A],
-		"right" => [DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT, B],
+		"left" => [DPAD_LEFT, LEFT_STICK_DIGITAL_LEFT, RIGHT_STICK_DIGITAL_LEFT, X],
+		"down" => [DPAD_DOWN, LEFT_STICK_DIGITAL_DOWN, RIGHT_STICK_DIGITAL_DOWN, A],
+		"up" => [DPAD_UP, LEFT_STICK_DIGITAL_UP, RIGHT_STICK_DIGITAL_UP, Y],
+		"right" => [DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT, RIGHT_STICK_DIGITAL_RIGHT, B],
 		"confirm" => [A, START],
 		"back" => [B]
 	];
