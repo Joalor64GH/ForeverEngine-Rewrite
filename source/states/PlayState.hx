@@ -86,7 +86,7 @@ class PlayState extends MusicBeatState
 		camHUD.bgColor.alpha = 0;
 		FlxG.cameras.add(camHUD);
 
-		song = ChartParser.loadChart(this, "bopeebo", 1, FNF_LEGACY);
+		song = ChartParser.loadChart(this, "dadbattle", 2, FNF_LEGACY);
 		if (song.speed < 1)
 			spawnTime /= FlxMath.roundDecimal(song.speed, 2);
 
