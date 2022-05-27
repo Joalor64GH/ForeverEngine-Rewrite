@@ -60,7 +60,7 @@ class Note extends OffsettedSprite
 
 		if (isHold && prevNote != null && prevNote.isHold)
 		{
-			prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.05;
+			prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.35;
 			if (PlayState.song != null)
 				prevNote.scale.y *= FlxMath.roundDecimal(PlayState.song.speed, 2);
 			prevNote.updateHitbox();

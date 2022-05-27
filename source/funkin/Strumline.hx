@@ -77,8 +77,8 @@ class Strumline extends FlxSpriteGroup
 			{
 				// i hate this so much
 				var roundedSpeed:Float = FlxMath.roundDecimal(PlayState.song.speed, 2);
-				var coolCrochet:Float = Conductor.stepCrochet / 156;
-				for (note in 0...length)
+				var coolCrochet:Float = 0.45 * Conductor.stepCrochet / 100 * roundedSpeed;
+				for (note in 0...length + 1)
 				{
 					var oldNote:Note = notesGroup.members[notesGroup.length - 1];
 					var newHold:Note = new Note(beatTime + coolCrochet * note + coolCrochet / roundedSpeed, index, noteType, true, oldNote);
