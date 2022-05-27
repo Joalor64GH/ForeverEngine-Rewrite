@@ -35,7 +35,7 @@ class Conductor
 	{
 		boundSong = new FlxSound().loadEmbedded(newSong);
 		if (newVocals != null)
-			boundVocals = new ForeverSoundGroup(newVocals);
+			boundVocals = new ForeverSoundGroup(newVocals, false);
 		boundState = newState;
 
 		soundGroup = new FlxTypedGroup<FlxSound>();
