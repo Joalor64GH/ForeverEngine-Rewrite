@@ -46,6 +46,8 @@ class PlayState extends MusicBeatState
 
 	public static var song(default, set):SongFormat;
 
+	var spawnTime:Float = 3000;
+
 	static function set_song(value:SongFormat):SongFormat
 	{
 		// preloading song notes & stuffs
@@ -152,8 +154,6 @@ class PlayState extends MusicBeatState
 
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
 	}
-
-	var spawnTime:Float = 3000;
 
 	override public function update(elapsed:Float)
 	{
