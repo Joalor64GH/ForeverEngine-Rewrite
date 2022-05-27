@@ -92,9 +92,6 @@ class PlayState extends MusicBeatState
 		if (song.speed < 1)
 			spawnTime /= FlxMath.roundDecimal(song.speed, 2);
 
-		Conductor.boundSong.play();
-		Conductor.boundVocals.play();
-
 		// add stage
 		var stage:Stage = new Stage('stage', FOREVER);
 		add(stage);
@@ -153,6 +150,9 @@ class PlayState extends MusicBeatState
 		FlxG.camera.focusOn(camFollow.getPosition());
 
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
+
+		Conductor.boundSong.play();
+		Conductor.boundVocals.play();
 	}
 
 	override public function update(elapsed:Float)
