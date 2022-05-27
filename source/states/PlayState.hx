@@ -161,6 +161,9 @@ class PlayState extends MusicBeatState
 	{
 		super.update(elapsed);
 
+		if (FlxG.keys.justPressed.SIX)
+			bfStrums.autoplay = !bfStrums.autoplay;
+
 		var lerpVal:Float = (elapsed * 2.4) * cameraSpeed; // cval
 		camFollowPos.setPosition(FlxMath.lerp(camFollowPos.x, camFollow.x, lerpVal), FlxMath.lerp(camFollowPos.y, camFollow.y, lerpVal));
 
@@ -296,33 +299,36 @@ class PlayState extends MusicBeatState
 		{
 			for (strumline in controlledStrumlines)
 			{
-				strumline.receptors.forEachAlive(function(receptor:Receptor)
+				if (!strumline.autoplay)
 				{
-					if (action == receptor.action)
+					strumline.receptors.forEachAlive(function(receptor:Receptor)
 					{
-						// var pressNotes:Array<Note> = [];
-						var sortedNotesList:Array<Note> = [];
-						// var notesStopped:Bool = false;
-
-						strumline.notesGroup.forEachAlive(function(strumNote:Note)
+						if (action == receptor.action)
 						{
-							if (strumNote.noteData == receptor.noteData && strumNote.canBeHit)
-								sortedNotesList.push(strumNote);
-						});
+							// var pressNotes:Array<Note> = [];
+							var sortedNotesList:Array<Note> = [];
+							// var notesStopped:Bool = false;
 
-						sortedNotesList.sort((a, b) -> Std.int(a.beatTime * Conductor.stepCrochet - b.beatTime * Conductor.stepCrochet));
+							strumline.notesGroup.forEachAlive(function(strumNote:Note)
+							{
+								if (strumNote.noteData == receptor.noteData && strumNote.canBeHit)
+									sortedNotesList.push(strumNote);
+							});
 
-						if (sortedNotesList.length > 0)
-						{
-							strumline.removeNote(sortedNotesList[0]);
-							receptor.playAnim('confirm', true);
-							boyfriend.playAnim('sing' + Receptor.actionList[receptor.noteData].toUpperCase());
-							songScore += 350;
+							sortedNotesList.sort((a, b) -> Std.int(a.beatTime * Conductor.stepCrochet - b.beatTime * Conductor.stepCrochet));
+
+							if (sortedNotesList.length > 0)
+							{
+								strumline.removeNote(sortedNotesList[0]);
+								receptor.playAnim('confirm', true);
+								boyfriend.playAnim('sing' + Receptor.actionList[receptor.noteData].toUpperCase());
+								songScore += 350;
+							}
+							else
+								receptor.playAnim('pressed');
 						}
-						else
-							receptor.playAnim('pressed');
-					}
-				});
+					});
+				}
 			}
 		}
 	}
@@ -335,12 +341,15 @@ class PlayState extends MusicBeatState
 			// find the right receptor(s) within the controlled strumlines
 			for (strumline in controlledStrumlines)
 			{
-				strumline.receptors.forEachAlive(function(receptor:Receptor)
+				if (!strumline.autoplay)
 				{
-					// if this is the specified action
-					if (action == receptor.action)
-						receptor.playAnim('static');
-				});
+					strumline.receptors.forEachAlive(function(receptor:Receptor)
+					{
+						// if this is the specified action
+						if (action == receptor.action)
+							receptor.playAnim('static');
+					});
+				}
 			}
 		}
 	}
