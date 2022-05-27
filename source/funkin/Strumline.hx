@@ -2,6 +2,7 @@ package funkin;
 
 import base.ScriptHandler.ForeverModule;
 import base.ScriptHandler;
+import base.ForeverDependencies.OffsettedSprite;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
@@ -56,6 +57,7 @@ class Strumline extends FlxSpriteGroup
 			receptor.antialiasing = receptorData.antialiasing;
 			//
 			receptor.x += (i - ((keyAmount - 1) / 2)) * receptor.swagWidth;
+			receptor.offset.set(0 + receptor.width / 4 - 2, 0 + receptor.height / 4);
 			receptors.add(receptor);
 		}
 		add(receptors);

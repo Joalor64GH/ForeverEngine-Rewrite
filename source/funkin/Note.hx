@@ -14,6 +14,8 @@ class Note extends OffsettedSprite
 
 	public var tooLate:Bool = false;
 
+	public var canBeHit:Bool = false;
+
 	public static var scriptCache:Map<String, ForeverModule> = [];
 	public static var dataCache:Map<String, ReceptorData> = [];
 
@@ -90,5 +92,12 @@ class Note extends OffsettedSprite
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		if (this.beatTime * Conductor.stepCrochet > Conductor.songPosition - Conductor.safeZoneOffset
+			&& this.beatTime * Conductor.stepCrochet < Conductor.songPosition + Conductor.safeZoneOffset) {
+				this.canBeHit = true;
+			}else {
+				this.canBeHit = false;
+			};
 	}
 }
