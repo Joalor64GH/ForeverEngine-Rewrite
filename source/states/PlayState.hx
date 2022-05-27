@@ -30,6 +30,8 @@ class PlayState extends MusicBeatState
 
 	public static var cameraSpeed:Float = 1;
 
+	public static var songScore = 0;
+
 	public static var camGame:FlxCamera;
 	public static var camHUD:FlxCamera;
 	public static var ui:UI;
@@ -205,6 +207,14 @@ class PlayState extends MusicBeatState
 						+ downscrollMultiplier * -((Conductor.songPosition - (strumNote.beatTime * Conductor.stepCrochet)) * (0.45 * roundedSpeed));
 				});
 			}
+
+			dadStrums.notesGroup.forEachAlive(function(strumNote:Note) {
+				if (strumNote.noteData < 4 && Math.abs(Conductor.songPosition - strumNote.beatTime * Conductor.stepCrochet) < 25) {
+					strumNote.kill();
+					dadStrums.notesGroup.remove(strumNote, true);
+					strumNote.destroy();
+				}
+			});
 		}
 	}
 
@@ -288,7 +298,7 @@ class PlayState extends MusicBeatState
 	}
 
 	// CONTROLS
-	public static var receptorActionList:Array<String> = ['left', 'up', 'down', 'right'];
+	public static var receptorActionList:Array<String> = ['left', 'down', 'up', 'right'];
 
 	override public function onActionPressed(action:String)
 	{
@@ -300,12 +310,38 @@ class PlayState extends MusicBeatState
 			{
 				for (receptor in strumline.receptors)
 				{
+
 					// if this is the specified action
 					if (action == receptor.action)
 					{
-						// placeholder
-						// trace(action);
-						receptor.animation.play('pressed');
+						var pressNotes:Array<Note> = [];
+						var sortedNotesList:Array<Note> = [];
+						var notesStopped:Bool = false;
+
+						strumline.notesGroup.forEachAlive(function(strumNote:Note){
+							if (strumNote.noteData == receptor.noteData && strumNote.canBeHit) {
+								sortedNotesList.push(strumNote);
+							};
+						});
+						
+						sortedNotesList.sort((a, b) -> Std.int(a.beatTime * Conductor.stepCrochet - b.beatTime * Conductor.stepCrochet));
+
+						if (sortedNotesList.length > 0) {
+							sortedNotesList[0].kill();
+							strumline.notesGroup.remove(sortedNotesList[0], true);
+							sortedNotesList[0].destroy();
+
+							receptor.animation.play('confirm');
+							receptor.offset.set(0 + receptor.width / 4 + 27, 0 + receptor.height / 4 + 30);
+
+							boyfriend.playAnim('sing'+receptorActionList[receptor.noteData].toUpperCase());
+
+							songScore += 350;
+						} else {
+							receptor.animation.play('pressed');
+							//receptor.offset.x = 0;
+						};
+						
 					}
 				}
 			}
@@ -329,6 +365,7 @@ class PlayState extends MusicBeatState
 						// placeholder
 						// trace(action);
 						receptor.animation.play('static');
+						receptor.offset.set(0 + receptor.width / 4 - 2, 0 + receptor.height / 4);
 					}
 				}
 			}

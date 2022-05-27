@@ -14,6 +14,7 @@ class Main extends Sprite
 {
 	public static var initialState:Class<FlxState> = PlayState;
 	public static var defaultFramerate:Int = 120;
+	public static var gameVersion:String = '1.0.0';
 
 	public static function main():Void
 		Lib.current.addChild(new Main());

@@ -17,6 +17,8 @@ class Conductor
 
 	public static var bpm:Float = 0; // beats per minute or the tempo of the song
 
+	public static var safeZoneOffset = (10 / 60) * 1000;
+
 	public static var crochet:Float = ((60 / bpm) * 1000); // beats in milliseconds
 	public static var stepCrochet:Float = crochet / 4; // steps in milliseconds
 

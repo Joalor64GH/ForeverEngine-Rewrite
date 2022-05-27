@@ -1,19 +1,52 @@
 package funkin;
 
 import flixel.FlxG;
+import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import flixel.ui.FlxBar;
 import states.PlayState;
 
 class UI extends FlxSpriteGroup
 {
+	private var healthBarBG:FlxSprite;
+	private var healthBar:FlxBar;
+	public var scoreBar:FlxText;
+
+	// in the future, this should be an option
+	var downscroll:Bool = false;
+
 	public function new()
 	{
 		super();
 
+		var barY = FlxG.height * 0.875;
+		if (downscroll)
+			barY = 69; //funny number huh?
+
+		healthBarBG = new FlxSprite(0, barY).loadGraphic(AssetManager.getAsset('healthBar', IMAGE, 'UI'));
+		healthBarBG.screenCenter(X);
+		healthBarBG.scrollFactor.set();
+		add(healthBarBG);
+
+		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8));
+		healthBar.scrollFactor.set();
+		healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
+		// healthBar
+		add(healthBar);
+
+		scoreBar = new FlxText(FlxG.width / 2, healthBarBG.y + 40, 0, "", 20);
+		scoreBar.setFormat(AssetManager.getAsset('vcr', FONT, 'fonts'), 18, FlxColor.WHITE);
+		scoreBar.setBorderStyle(OUTLINE, FlxColor.BLACK, 2);
+		scoreBar.scrollFactor.set();
+		add(scoreBar);
+
+		scoreBar.text = "Score: 9940493021";
+		scoreBar.x = ((FlxG.width / 2) - (scoreBar.width / 2));
+
 		// ui stuffs!
-		var cornerMark:FlxText = new FlxText(0, 0, 0, 'FOREVER ENGINE v1.0.0\n');
+		var cornerMark:FlxText = new FlxText(0, 0, 0, 'FOREVER ENGINE v' + Main.gameVersion + '\n');
 		cornerMark.setFormat(AssetManager.getAsset('vcr', FONT, 'fonts'), 18, FlxColor.WHITE);
 		cornerMark.setBorderStyle(OUTLINE, FlxColor.BLACK, 2);
 		add(cornerMark);
@@ -30,5 +63,10 @@ class UI extends FlxSpriteGroup
 			centerMark.screenCenter(X);
 			centerMark.antialiasing = true;
 		}
+	}
+
+	override public function update(elapsed:Float)
+	{
+		scoreBar.text = 'Score: ' + PlayState.songScore;
 	}
 }
