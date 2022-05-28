@@ -40,8 +40,6 @@ class PlayState extends MusicBeatState
 
 	var strumlines:FlxTypedGroup<Strumline>;
 
-	var notesSpawnTime:Float = 3000;
-
 	public var dadStrums:Strumline;
 	public var bfStrums:Strumline;
 
@@ -89,9 +87,7 @@ class PlayState extends MusicBeatState
 		FlxG.cameras.add(camHUD, false);
 		FlxG.cameras.setDefaultDrawTarget(camGame, true);
 
-		song = ChartParser.loadChart(this, "dadbattle", 2, FNF_LEGACY);
-		if (song.speed < 1)
-			notesSpawnTime /= FlxMath.roundDecimal(song.speed, 2);
+		song = ChartParser.loadChart(this, "senpai", 2, FNF_LEGACY);
 
 		// add stage
 		var stage:Stage = new Stage('stage', FOREVER);
@@ -194,7 +190,7 @@ class PlayState extends MusicBeatState
 				// add the note to the corresponding strumline
 				// trace('note at time ${unspawnNote.beatTime}');
 				strumlines.members[unspawnNote.strumline].createNote(unspawnNote.beatTime, unspawnNote.index, unspawnNote.type, unspawnNote.holdBeat);
-			}, -notesSpawnTime);
+			}, -4500);
 
 			for (strumline in controlledStrumlines)
 			{
@@ -220,7 +216,6 @@ class PlayState extends MusicBeatState
 				strumline.allNotes.forEachAlive(function(strumNote:Note)
 				{
 					var receptor:Receptor = strumline.receptors.members[Math.floor(strumNote.noteData)];
-
 					strumNote.x = receptor.x + strumNote.offsetX;
 					strumNote.y = receptor.y
 						+ strumNote.offsetY
@@ -228,23 +223,6 @@ class PlayState extends MusicBeatState
 
 					if (strumNote.isHold)
 					{
-						// strumNote.y -= (strumNote.height / 2 + 20) * downscrollMultiplier;
-						// if (strumNote.animation.curAnim.name.endsWith('holdend') && strumNote.prevNote != null)
-						// {
-						// 	strumNote.y -= (strumNote.prevNote.height / 2 + 20) * downscrollMultiplier;
-						// 	// if (Init.trueSettings.get('Downscroll')) {
-						// 	// 	strumNote.y += (strumNote.height * 2);
-						// 	// 	if (strumNote.endHoldOffset == Math.NEGATIVE_INFINITY) {
-						// 	// 		// set the end hold offset yeah I hate that I fix this like this
-						// 	// 		strumNote.endHoldOffset = (strumNote.prevNote.y - (strumNote.y + strumNote.height));
-						// 	// 		trace(strumNote.endHoldOffset);
-						// 	// 	}
-						// 	// 	else
-						// 	// 		strumNote.y += strumNote.endHoldOffset;
-						// 	// } else // this system is funny like that
-						// 	strumNote.y += (strumNote.height / 2 + 20) * downscrollMultiplier;
-						// }
-
 						var center:Float = strumline.y + receptor.swagWidth / 1.125;
 						if (strumNote.isHold
 							&& strumNote.y + strumNote.offset.y <= center
