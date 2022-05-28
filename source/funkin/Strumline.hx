@@ -78,6 +78,7 @@ class Strumline extends FlxSpriteGroup
 				if (!strumNote.wasGoodHit && Math.abs(Conductor.songPosition - strumNote.beatTime * Conductor.stepCrochet) < 25)
 				{
 					strumNote.wasGoodHit = true;
+
 					if (!strumNote.isHold || !strumNote.animation.name.endsWith('holdend'))
 					{
 						var action:String = Receptor.actionList[strumNote.noteData];
@@ -95,7 +96,8 @@ class Strumline extends FlxSpriteGroup
 						});
 					}
 
-					removeNote(strumNote);
+					if (!strumNote.isHold)
+						removeNote(strumNote);
 				}
 			});
 	}
@@ -118,15 +120,13 @@ class Strumline extends FlxSpriteGroup
 			{
 				// i hate this so much
 				var roundedSpeed:Float = FlxMath.roundDecimal(PlayState.song.speed, 2);
-				var coolCrochet:Float = Conductor.stepCrochet / roundedSpeed / 120;
+				var coolCrochet:Float = Conductor.stepCrochet / 175 / roundedSpeed;
 				for (susNote in 0...(length + 1))
 				{
 					oldNote = allNotes.members[allNotes.length - 1];
 
-					var newHold:Note = new Note(beatTime + coolCrochet * susNote + coolCrochet, index, noteType, oldNote, true);
-					// best thing i can do for make scroll consistant
-					// if (susNote > 0)
-					// 	newHold.offsetY -= (13 + roundedSpeed / 1.9 * 5) * roundedSpeed * susNote;
+					var newHold:Note = new Note(beatTime + coolCrochet * (susNote / (roundedSpeed / (roundedSpeed - 0.025))) / coolCrochet + coolCrochet,
+						index, noteType, oldNote, true);
 					allNotes.add(newHold);
 					holdsGroup.add(newHold);
 				}

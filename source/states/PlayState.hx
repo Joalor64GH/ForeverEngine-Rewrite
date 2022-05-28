@@ -89,7 +89,7 @@ class PlayState extends MusicBeatState
 		FlxG.cameras.add(camHUD, false);
 		FlxG.cameras.setDefaultDrawTarget(camGame, true);
 
-		song = ChartParser.loadChart(this, "dadbattle", 2, FNF_LEGACY);
+		song = ChartParser.loadChart(this, "bopeebo", 2, FNF_LEGACY);
 		if (song.speed < 1)
 			notesSpawnTime /= FlxMath.roundDecimal(song.speed, 2);
 
@@ -228,27 +228,27 @@ class PlayState extends MusicBeatState
 
 					if (strumNote.isHold)
 					{
-						strumNote.y -= (strumNote.height / 2) * downscrollMultiplier;
-						if (strumNote.animation.curAnim.name.endsWith('holdend') && strumNote.prevNote != null)
-						{
-							strumNote.y -= (strumNote.prevNote.height / 2) * downscrollMultiplier;
-							// if (Init.trueSettings.get('Downscroll')) {
-							// 	strumNote.y += (strumNote.height * 2);
-							// 	if (strumNote.endHoldOffset == Math.NEGATIVE_INFINITY) {
-							// 		// set the end hold offset yeah I hate that I fix this like this
-							// 		strumNote.endHoldOffset = (strumNote.prevNote.y - (strumNote.y + strumNote.height));
-							// 		trace(strumNote.endHoldOffset);
-							// 	}
-							// 	else
-							// 		strumNote.y += strumNote.endHoldOffset;
-							// } else // this system is funny like that
-							strumNote.y += (strumNote.height / 2) * downscrollMultiplier;
-						}
+						// strumNote.y -= (strumNote.height / 2 + 20) * downscrollMultiplier;
+						// if (strumNote.animation.curAnim.name.endsWith('holdend') && strumNote.prevNote != null)
+						// {
+						// 	strumNote.y -= (strumNote.prevNote.height / 2 + 20) * downscrollMultiplier;
+						// 	// if (Init.trueSettings.get('Downscroll')) {
+						// 	// 	strumNote.y += (strumNote.height * 2);
+						// 	// 	if (strumNote.endHoldOffset == Math.NEGATIVE_INFINITY) {
+						// 	// 		// set the end hold offset yeah I hate that I fix this like this
+						// 	// 		strumNote.endHoldOffset = (strumNote.prevNote.y - (strumNote.y + strumNote.height));
+						// 	// 		trace(strumNote.endHoldOffset);
+						// 	// 	}
+						// 	// 	else
+						// 	// 		strumNote.y += strumNote.endHoldOffset;
+						// 	// } else // this system is funny like that
+						// 	strumNote.y += (strumNote.height / 2 + 20) * downscrollMultiplier;
+						// }
 
 						var center:Float = strumline.y + receptor.swagWidth / 1.125;
-						if (strumNote.y + strumNote.offset.y <= center
-							&& strumline.autoplay
-							|| (strumNote.wasGoodHit || (strumNote.prevNote.wasGoodHit && !strumNote.canBeHit)))
+						if (strumNote.isHold
+							&& strumNote.y + strumNote.offset.y <= center
+							&& (strumline.autoplay || (strumNote.wasGoodHit || (strumNote.prevNote.wasGoodHit && !strumNote.canBeHit))))
 						{
 							var swagRect = new FlxRect(0, center - strumNote.y, strumNote.width * 2, strumNote.height * 2);
 							swagRect.y /= strumNote.scale.y;
@@ -271,8 +271,7 @@ class PlayState extends MusicBeatState
 			var receptor:Receptor = strumline.receptors.members[Math.floor(strumNote.noteData)];
 			if (receptor != null)
 			{
-				if (!strumNote.isHold || !strumNote.animation.name.endsWith('holdend'))
-					receptor.playAnim('confirm', true);
+				receptor.playAnim('confirm', true);
 				boyfriend.playAnim('sing' + Receptor.actionList[receptor.noteData].toUpperCase(), true);
 			}
 
