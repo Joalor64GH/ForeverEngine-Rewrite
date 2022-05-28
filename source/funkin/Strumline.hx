@@ -3,15 +3,9 @@ package funkin;
 import flixel.math.FlxMath;
 import states.PlayState;
 import base.Conductor;
-import base.ScriptHandler.ForeverModule;
 import base.ScriptHandler;
-import base.ForeverDependencies.OffsettedSprite;
 import flixel.FlxSprite;
-import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
-import haxe.Json;
-import haxe.ds.StringMap;
-import sys.io.File;
 
 using StringTools;
 

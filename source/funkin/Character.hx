@@ -3,12 +3,10 @@ package funkin;
 import AssetManager.EngineImplementation;
 import base.ForeverDependencies.OffsettedSprite;
 import base.ScriptHandler;
-import flixel.FlxSprite;
 import flixel.math.FlxPoint;
 import funkin.compat.PsychCharacter;
 import haxe.Json;
 import haxe.ds.StringMap;
-import sys.io.File;
 
 class Character extends OffsettedSprite
 {

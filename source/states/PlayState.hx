@@ -3,23 +3,20 @@ package states;
 import flixel.math.FlxRect;
 import base.Controls;
 import base.ChartParser;
-import base.ChartParser;
 import base.Conductor;
 import base.MusicSynced.CameraEvent;
 import base.MusicSynced.UnspawnedNote;
 import base.ScriptHandler;
-import dependency.FlxTiledSpriteExt;
+// import dependency.FlxTiledSpriteExt;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
-import flixel.system.FlxSound;
 import funkin.Character;
 import funkin.Note;
 import funkin.Stage;
-import funkin.Strumline.Receptor;
 import funkin.Strumline;
 import funkin.UI;
 
@@ -42,6 +39,8 @@ class PlayState extends MusicBeatState
 	public var dad:Character;
 
 	var strumlines:FlxTypedGroup<Strumline>;
+
+	var notesSpawnTime:Float = 3000;
 
 	public var dadStrums:Strumline;
 	public var bfStrums:Strumline;
@@ -77,7 +76,7 @@ class PlayState extends MusicBeatState
 
 	public static var uniqueNoteStash:Array<String> = [];
 
-	public var tiledSprite:FlxTiledSpriteExt;
+	// public var tiledSprite:FlxTiledSpriteExt;
 
 	override public function create()
 	{
@@ -85,12 +84,14 @@ class PlayState extends MusicBeatState
 
 		camGame = new FlxCamera();
 		FlxG.cameras.reset(camGame);
-		FlxCamera.defaultCameras = [camGame];
 		camHUD = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
-		FlxG.cameras.add(camHUD);
+		FlxG.cameras.add(camHUD, false);
+		FlxG.cameras.setDefaultDrawTarget(camGame, true);
 
 		song = ChartParser.loadChart(this, "dadbattle", 2, FNF_LEGACY);
+		if (song.speed < 1)
+			notesSpawnTime /= FlxMath.roundDecimal(song.speed, 2);
 
 		// add stage
 		var stage:Stage = new Stage('stage', FOREVER);
@@ -193,7 +194,7 @@ class PlayState extends MusicBeatState
 				// add the note to the corresponding strumline
 				// trace('note at time ${unspawnNote.beatTime}');
 				strumlines.members[unspawnNote.strumline].createNote(unspawnNote.beatTime, unspawnNote.index, unspawnNote.type, unspawnNote.holdBeat);
-			}, -4500);
+			}, -notesSpawnTime);
 
 			for (strumline in controlledStrumlines)
 			{

@@ -4,7 +4,6 @@ import AssetManager.EngineImplementation;
 import base.MusicSynced;
 import haxe.Json;
 import states.MusicBeatState;
-import states.PlayState;
 
 typedef SongFormat =
 {

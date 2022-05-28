@@ -4,7 +4,6 @@ import flixel.math.FlxMath;
 import states.PlayState;
 import base.Conductor;
 import base.ForeverDependencies.OffsettedSprite;
-import base.ScriptHandler.ForeverModule;
 import base.ScriptHandler;
 import funkin.Strumline.ReceptorData;
 import haxe.Json;
