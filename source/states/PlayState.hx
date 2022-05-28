@@ -24,6 +24,8 @@ using StringTools;
 
 class PlayState extends MusicBeatState
 {
+	public static var instance:PlayState;
+
 	private var camFollow:FlxObject;
 	private var camFollowPos:FlxObject;
 
@@ -31,9 +33,9 @@ class PlayState extends MusicBeatState
 
 	public static var songScore = 0;
 
-	public static var camGame:FlxCamera;
-	public static var camHUD:FlxCamera;
-	public static var ui:UI;
+	public var camGame:FlxCamera;
+	public var camHUD:FlxCamera;
+	public var ui:UI;
 
 	public var boyfriend:Character;
 	public var dad:Character;
@@ -79,6 +81,8 @@ class PlayState extends MusicBeatState
 	override public function create()
 	{
 		super.create();
+
+		instance = this;
 
 		camGame = new FlxCamera();
 		FlxG.cameras.reset(camGame);
@@ -203,7 +207,7 @@ class PlayState extends MusicBeatState
 							&& strumNote.canBeHit
 							&& !strumline.autoplay
 							&& !strumNote.tooLate)
-							goodNoteHit(strumline, strumNote);
+							goodNoteHit(strumNote);
 					});
 				}
 			}
@@ -240,13 +244,13 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	public function goodNoteHit(strumline:Strumline, strumNote:Note)
+	public function goodNoteHit(strumNote:Note)
 	{
 		if (!strumNote.wasGoodHit)
 		{
 			strumNote.wasGoodHit = true;
 
-			var receptor:Receptor = strumline.receptors.members[Math.floor(strumNote.noteData)];
+			var receptor:Receptor = bfStrums.receptors.members[Math.floor(strumNote.noteData)];
 			if (receptor != null)
 			{
 				receptor.playAnim('confirm', true);
@@ -256,7 +260,7 @@ class PlayState extends MusicBeatState
 			songScore += 350;
 
 			if (!strumNote.isHold)
-				strumline.removeNote(strumNote);
+				bfStrums.removeNote(strumNote);
 		}
 	}
 
@@ -318,7 +322,7 @@ class PlayState extends MusicBeatState
 		// /*
 		if (camZooming)
 		{
-			var easeLerp = 0.95 * (elapsed / (1 / Main.defaultFramerate));
+			var easeLerp = Main.framerateAdjust(0.95);
 			gameBump = FlxMath.lerp(0, gameBump, easeLerp);
 			hudBump = FlxMath.lerp(0, hudBump, easeLerp);
 		}
@@ -352,20 +356,40 @@ class PlayState extends MusicBeatState
 					{
 						if (action == receptor.action)
 						{
-							// var pressNotes:Array<Note> = [];
-							var sortedNotesList:Array<Note> = [];
-							// var notesStopped:Bool = false;
+							var possibleNotes:Array<Note> = [];
+							var goodNotes:Array<Note> = [];
 
 							strumline.notesGroup.forEachAlive(function(strumNote:Note)
 							{
-								if (strumNote.noteData == receptor.noteData && strumNote.canBeHit)
-									sortedNotesList.push(strumNote);
+								if (strumNote.noteData == receptor.noteData
+									&& !strumNote.tooLate
+									&& !strumNote.wasGoodHit
+									&& strumNote.canBeHit)
+									possibleNotes.push(strumNote);
 							});
 
-							sortedNotesList.sort((a, b) -> Std.int(a.beatTime * Conductor.stepCrochet - b.beatTime * Conductor.stepCrochet));
+							if (possibleNotes.length > 0)
+							{
+								for (note in possibleNotes)
+								{
+									var noteIsGood:Bool = true;
 
-							if (sortedNotesList.length > 0)
-								goodNoteHit(strumline, sortedNotesList[0]);
+									for (doubleNote in goodNotes)
+									{
+										if (Math.abs(doubleNote.beatTime - note.beatTime) < 10)
+										{
+											noteIsGood = false;
+											break;
+										}
+									}
+
+									if (noteIsGood)
+									{
+										goodNoteHit(note);
+										goodNotes.push(note);
+									}
+								}
+							}
 							else
 								receptor.playAnim('pressed');
 						}

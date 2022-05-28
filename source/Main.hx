@@ -12,9 +12,8 @@ import states.PlayState;
 
 class Main extends Sprite
 {
-	public static var initialState:Class<FlxState> = PlayState;
-	public static var defaultFramerate:Int = 120;
-	public static var gameVersion:String = '1.0.0';
+	static var initialState:Class<FlxState> = PlayState;
+	static var defaultFramerate:Int = 120;
 
 	public static function main():Void
 		Lib.current.addChild(new Main());
@@ -41,4 +40,7 @@ class Main extends Sprite
 		FlxG.mouse.useSystemCursor = true; // Use system cursor because it's prettier
 		FlxG.mouse.visible = false; // Hide mouse on start
 	}
+
+	inline static public function framerateAdjust(value:Float)
+		return value * (FlxG.elapsed / (1 / FlxG.drawFramerate));
 }

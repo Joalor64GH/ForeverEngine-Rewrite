@@ -1,5 +1,6 @@
 package funkin;
 
+import lime.app.Application;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
@@ -38,16 +39,13 @@ class UI extends FlxSpriteGroup
 		add(healthBar);
 
 		scoreBar = new FlxText(FlxG.width / 2, healthBarBG.y + 40, 0, "", 20);
-		scoreBar.setFormat(AssetManager.getAsset('vcr', FONT, 'fonts'), 18, FlxColor.WHITE);
+		scoreBar.setFormat(AssetManager.getAsset('vcr', FONT, 'fonts'), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		scoreBar.setBorderStyle(OUTLINE, FlxColor.BLACK, 2);
 		scoreBar.scrollFactor.set();
 		add(scoreBar);
 
-		scoreBar.text = "Score: 9940493021";
-		scoreBar.x = ((FlxG.width / 2) - (scoreBar.width / 2));
-
 		// ui stuffs!
-		var cornerMark:FlxText = new FlxText(0, 0, 0, 'FOREVER ENGINE v' + Main.gameVersion + '\n');
+		var cornerMark:FlxText = new FlxText(0, 0, 0, 'FOREVER ENGINE v' + Application.current.meta.get('version') + '\n');
 		cornerMark.setFormat(AssetManager.getAsset('vcr', FONT, 'fonts'), 18, FlxColor.WHITE);
 		cornerMark.setBorderStyle(OUTLINE, FlxColor.BLACK, 2);
 		add(cornerMark);
