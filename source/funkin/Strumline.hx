@@ -115,7 +115,6 @@ class Strumline extends FlxSpriteGroup
 			oldNote = null;
 
 		var newNote:Note = new Note(beatTime, index, noteType, oldNote);
-		newNote.mustPress = !autoplay;
 
 		// make holds from the note
 		if (holdLength != null && holdLength > 0)
@@ -131,7 +130,6 @@ class Strumline extends FlxSpriteGroup
 					oldNote = allNotes.members[allNotes.length - 1];
 
 					var newHold:Note = new Note(beatTime + coolCrochet * susNote + coolCrochet, index, noteType, oldNote, true);
-					newHold.mustPress = !autoplay;
 					// best thing i can do for make scroll consistant
 					// if (susNote > 0)
 					// 	newHold.offsetY -= (13 + roundedSpeed / 1.9 * 5) * roundedSpeed * susNote;

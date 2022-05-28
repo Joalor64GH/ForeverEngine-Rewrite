@@ -204,7 +204,7 @@ class PlayState extends MusicBeatState
 						// hold note functions
 						if (Controls.isActionPressed(Receptor.actionList[strumNote.noteData])
 							&& strumNote.canBeHit
-							&& strumNote.mustPress
+							&& !strumline.autoplay
 							&& !strumNote.tooLate)
 							goodNoteHit(strumline, strumNote);
 					});
@@ -246,7 +246,7 @@ class PlayState extends MusicBeatState
 
 						var center:Float = strumline.y + receptor.swagWidth / 1.125;
 						if (strumNote.y + strumNote.offset.y <= center
-							&& !strumNote.mustPress
+							&& strumline.autoplay
 							|| (strumNote.wasGoodHit || (strumNote.prevNote.wasGoodHit && !strumNote.canBeHit)))
 						{
 							var swagRect = new FlxRect(0, center - strumNote.y, strumNote.width * 2, strumNote.height * 2);

@@ -13,7 +13,6 @@ class Note extends OffsettedSprite
 {
 	public var noteData:Int;
 	public var beatTime:Float;
-	public var mustPress:Bool = false;
 	public var wasGoodHit:Bool = false;
 
 	public var swagWidth:Float;
