@@ -87,7 +87,7 @@ class PlayState extends MusicBeatState
 		FlxG.cameras.add(camHUD, false);
 		FlxG.cameras.setDefaultDrawTarget(camGame, true);
 
-		song = ChartParser.loadChart(this, "senpai", 2, FNF_LEGACY);
+		song = ChartParser.loadChart(this, "dadbattle", 2, FNF_LEGACY);
 
 		// add stage
 		var stage:Stage = new Stage('stage', FOREVER);
