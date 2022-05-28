@@ -33,6 +33,8 @@ class Note extends OffsettedSprite
 	public var receptorData:ReceptorData;
 	public var noteModule:ForeverModule;
 
+	public var endHoldOffset:Float = Math.NEGATIVE_INFINITY;
+
 	public function new(beatTime:Float, index:Int, noteType:String, ?prevNote:Note, isHold:Bool = false)
 	{
 		if (prevNote == null)

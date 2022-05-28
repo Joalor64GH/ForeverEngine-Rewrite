@@ -50,8 +50,6 @@ class PlayState extends MusicBeatState
 
 	public static var song(default, set):SongFormat;
 
-	var spawnTime:Float = 3000;
-
 	static function set_song(value:SongFormat):SongFormat
 	{
 		// preloading song notes & stuffs
@@ -92,9 +90,7 @@ class PlayState extends MusicBeatState
 		camHUD.bgColor.alpha = 0;
 		FlxG.cameras.add(camHUD);
 
-		song = ChartParser.loadChart(this, "bopeebo", 2, FNF_LEGACY);
-		if (song.speed < 1)
-			spawnTime /= FlxMath.roundDecimal(song.speed, 2);
+		song = ChartParser.loadChart(this, "dadbattle", 2, FNF_LEGACY);
 
 		// add stage
 		var stage:Stage = new Stage('stage', FOREVER);
@@ -197,7 +193,7 @@ class PlayState extends MusicBeatState
 				// add the note to the corresponding strumline
 				// trace('note at time ${unspawnNote.beatTime}');
 				strumlines.members[unspawnNote.strumline].createNote(unspawnNote.beatTime, unspawnNote.index, unspawnNote.type, unspawnNote.holdBeat);
-			}, -spawnTime);
+			}, -4500);
 
 			for (strumline in controlledStrumlines)
 			{
@@ -231,8 +227,24 @@ class PlayState extends MusicBeatState
 
 					if (strumNote.isHold)
 					{
-						var center:Float = strumline.y + receptor.swagWidth / 1.125;
+						strumNote.y -= (strumNote.height / 2) * downscrollMultiplier;
+						if (strumNote.animation.curAnim.name.endsWith('holdend') && strumNote.prevNote != null)
+						{
+							strumNote.y -= (strumNote.prevNote.height / 2) * downscrollMultiplier;
+							// if (Init.trueSettings.get('Downscroll')) {
+							// 	strumNote.y += (strumNote.height * 2);
+							// 	if (strumNote.endHoldOffset == Math.NEGATIVE_INFINITY) {
+							// 		// set the end hold offset yeah I hate that I fix this like this
+							// 		strumNote.endHoldOffset = (strumNote.prevNote.y - (strumNote.y + strumNote.height));
+							// 		trace(strumNote.endHoldOffset);
+							// 	}
+							// 	else
+							// 		strumNote.y += strumNote.endHoldOffset;
+							// } else // this system is funny like that
+							strumNote.y += (strumNote.height / 2) * downscrollMultiplier;
+						}
 
+						var center:Float = strumline.y + receptor.swagWidth / 1.125;
 						if (strumNote.y + strumNote.offset.y <= center
 							&& !strumNote.mustPress
 							|| (strumNote.wasGoodHit || (strumNote.prevNote.wasGoodHit && !strumNote.canBeHit)))
