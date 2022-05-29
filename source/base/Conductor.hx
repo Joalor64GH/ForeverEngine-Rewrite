@@ -1,5 +1,6 @@
 package base;
 
+import flixel.FlxG;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.system.FlxSound;
 import openfl.media.Sound;
@@ -104,6 +105,9 @@ class Conductor
 				boundState.beatHit();
 				lastBeat = beatPosition;
 			}
+
+			FlxG.watch.addQuick('Song Position', songPosition);
+			FlxG.watch.addQuick('Beat Position', beatPosition);
 		}
 	}
 

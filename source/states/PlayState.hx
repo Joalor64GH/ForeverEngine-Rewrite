@@ -1,5 +1,6 @@
 package states;
 
+import base.Timings;
 import flixel.math.FlxRect;
 import base.Controls;
 import base.ChartParser;
@@ -31,11 +32,14 @@ class PlayState extends MusicBeatState
 
 	public static var cameraSpeed:Float = 1;
 
+	public static var health:Float = 1;
 	public static var songScore = 0;
 
 	public var camGame:FlxCamera;
 	public var camHUD:FlxCamera;
 	public var ui:UI;
+
+	public var stage:Stage;
 
 	public var boyfriend:Character;
 	public var dad:Character;
@@ -82,6 +86,9 @@ class PlayState extends MusicBeatState
 	{
 		super.create();
 
+		// reset static variables
+		health = 1;
+
 		instance = this;
 
 		camGame = new FlxCamera();
@@ -91,10 +98,10 @@ class PlayState extends MusicBeatState
 		FlxG.cameras.add(camHUD, false);
 		FlxG.cameras.setDefaultDrawTarget(camGame, true);
 
-		song = ChartParser.loadChart(this, "dadbattle", 2, FNF_LEGACY);
+		song = ChartParser.loadChart(this, "bopeebo", 1, FNF_LEGACY);
 
 		// add stage
-		var stage:Stage = new Stage('stage', FOREVER);
+		stage = new Stage('stage', FOREVER);
 		add(stage);
 
 		boyfriend = new Character(750, 850, PSYCH, 'bf-psych', 'BOYFRIEND', true);
@@ -242,26 +249,44 @@ class PlayState extends MusicBeatState
 				});
 			}
 		}
+
+		if (health > 2)
+			health = 2;
 	}
 
-	public function goodNoteHit(strumNote:Note)
+	public function goodNoteHit(note:Note)
 	{
-		if (!strumNote.wasGoodHit)
+		if (!note.wasGoodHit)
 		{
-			strumNote.wasGoodHit = true;
+			note.wasGoodHit = true;
 
-			var receptor:Receptor = bfStrums.receptors.members[Math.floor(strumNote.noteData)];
+			var receptor:Receptor = bfStrums.receptors.members[Math.floor(note.noteData)];
 			if (receptor != null)
 			{
 				receptor.playAnim('confirm', true);
 				boyfriend.playAnim('sing' + Receptor.actionList[receptor.noteData].toUpperCase(), true);
 			}
 
-			songScore += 350;
+			if (!note.isHold)
+				popUpScore(note);
 
-			if (!strumNote.isHold)
-				bfStrums.removeNote(strumNote);
+			if (!note.isHold)
+				bfStrums.removeNote(note);
 		}
+	}
+
+	function popUpScore(note:Note)
+	{
+		var rating:String = Timings.getRating(Math.abs(note.beatTime * Conductor.stepCrochet - Conductor.songPosition));
+		var judge:Judgement = Timings.judgements.get(rating);
+
+		healthCall(judge.healthMult);
+		songScore += judge.score;
+	}
+
+	static inline function healthCall(ratingMultiplier:Float = 1)
+	{
+		health += 0.06 * (ratingMultiplier / 100);
 	}
 
 	// get the beats

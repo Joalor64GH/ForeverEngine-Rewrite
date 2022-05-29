@@ -1,4 +1,3 @@
-
 var bg;
 var stageFront;
 var stageCurtains;
@@ -35,8 +34,4 @@ function onCreate() {
 
 	// add to the final array
 	add(stageCurtains);
-}
-
-function onUpdate(elapsed) {
-    
 }

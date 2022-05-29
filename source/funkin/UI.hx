@@ -32,13 +32,14 @@ class UI extends FlxSpriteGroup
 		healthBarBG.scrollFactor.set();
 		add(healthBarBG);
 
-		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8));
+		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), PlayState,
+			'health', 0, 2);
 		healthBar.scrollFactor.set();
 		healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
 		// healthBar
 		add(healthBar);
 
-		scoreBar = new FlxText(FlxG.width / 2, healthBarBG.y + 40, 0, "", 20);
+		scoreBar = new FlxText(0, healthBarBG.y + 40, FlxG.width, "", 20);
 		scoreBar.setFormat(AssetManager.getAsset('vcr', FONT, 'fonts'), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		scoreBar.setBorderStyle(OUTLINE, FlxColor.BLACK, 2);
 		scoreBar.scrollFactor.set();
@@ -66,6 +67,8 @@ class UI extends FlxSpriteGroup
 
 	override public function update(elapsed:Float)
 	{
+		super.update(elapsed);
+
 		scoreBar.text = 'Score: ' + PlayState.songScore;
 	}
 }
