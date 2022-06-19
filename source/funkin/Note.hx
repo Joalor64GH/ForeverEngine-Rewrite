@@ -1,9 +1,8 @@
 package funkin;
 
-import flixel.math.FlxMath;
-import states.PlayState;
 import base.Conductor;
 import base.ForeverDependencies.OffsettedSprite;
+import base.ScriptHandler.ForeverModule;
 import base.ScriptHandler;
 import funkin.Strumline.ReceptorData;
 import haxe.Json;
@@ -12,18 +11,9 @@ class Note extends OffsettedSprite
 {
 	public var noteData:Int;
 	public var beatTime:Float;
-	public var wasGoodHit:Bool = false;
 
-	public var swagWidth:Float;
-
-	public var isHold:Bool;
-	public var prevNote:Note;
-
-	public var offsetX:Float = 0;
-	public var offsetY:Float = 0;
-
-	public var canBeHit:Bool = false;
 	public var tooLate:Bool = false;
+	public var canBeHit:Bool = false;
 
 	public static var scriptCache:Map<String, ForeverModule> = [];
 	public static var dataCache:Map<String, ReceptorData> = [];
@@ -31,17 +21,10 @@ class Note extends OffsettedSprite
 	public var receptorData:ReceptorData;
 	public var noteModule:ForeverModule;
 
-	public var endHoldOffset:Float = Math.NEGATIVE_INFINITY;
-
-	public function new(beatTime:Float, index:Int, noteType:String, ?prevNote:Note, isHold:Bool = false)
+	public function new(beatTime:Float, index:Int, noteType:String)
 	{
-		if (prevNote == null)
-			prevNote = this;
-
 		noteData = index;
 		this.beatTime = beatTime;
-		this.isHold = isHold;
-		this.prevNote = prevNote;
 
 		super();
 
@@ -65,14 +48,6 @@ class Note extends OffsettedSprite
 		setGraphicSize(Std.int(width * receptorData.size));
 		updateHitbox();
 		antialiasing = receptorData.antialiasing;
-
-		if (isHold && prevNote != null && prevNote.isHold)
-		{
-			prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5;
-			if (PlayState.song != null)
-				prevNote.scale.y *= FlxMath.roundDecimal(PlayState.song.speed, 2);
-			prevNote.updateHitbox();
-		}
 	}
 
 	public static function returnNoteData(noteType:String):ReceptorData
@@ -81,17 +56,7 @@ class Note extends OffsettedSprite
 		if (!dataCache.exists(noteType))
 		{
 			trace('setting note data $noteType');
-			var leType:ReceptorData = cast Json.parse(AssetManager.getAsset(noteType, JSON, 'notetypes/$noteType'));
-
-			// check for null values
-			if (leType.separation == null)
-				leType.separation = 160;
-			if (leType.size == null)
-				leType.size = 0.7;
-			if (leType.antialiasing == null)
-				leType.antialiasing = true;
-
-			dataCache.set(noteType, leType);
+			dataCache.set(noteType, cast Json.parse(AssetManager.getAsset(noteType, JSON, 'notetypes/$noteType')));
 		}
 		return dataCache.get(noteType);
 	}
@@ -115,9 +80,12 @@ class Note extends OffsettedSprite
 
 	override public function update(elapsed:Float)
 	{
-		super.update(elapsed);
+		if (beatTime > Conductor.stepPosition - (Conductor.msThreshold / Conductor.stepCrochet) //
+			&& beatTime < Conductor.stepPosition + (Conductor.msThreshold / Conductor.stepCrochet))
+			canBeHit = true;
+		else
+			canBeHit = false;
 
-		canBeHit = beatTime * Conductor.stepCrochet > Conductor.songPosition - Conductor.safeZoneOffset
-			&& beatTime * Conductor.stepCrochet < Conductor.songPosition + Conductor.safeZoneOffset;
+		super.update(elapsed);
 	}
 }

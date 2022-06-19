@@ -37,11 +37,11 @@ class ForeverSoundGroup
 	 * [Creates a Sound Group with multiple Sounds]
 	 * @param newSounds an Array of Sounds you would like the group to include
 	 */
-	public function new(newSounds:Array<Sound>, loop:Bool = true)
+	public function new(newSounds:Array<Sound>)
 	{
 		// return all of the sounds
 		for (i in newSounds)
-			sounds.push(new FlxSound().loadEmbedded(i, loop));
+			sounds.push(new FlxSound().loadEmbedded(i));
 	}
 
 	/**

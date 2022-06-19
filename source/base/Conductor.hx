@@ -9,6 +9,11 @@ import states.MusicBeatState.MusicHandler;
 /**
  * A singleton class that handles the usage and control of songs
  */
+typedef Judgement =
+{
+	var timing:Float;
+}
+
 class Conductor
 {
 	public static var songPosition:Float = 0; // determines the position of the song in milliseconds
@@ -16,8 +21,6 @@ class Conductor
 	public static var stepPosition:Int = 0; // ditto, but steps
 
 	public static var bpm:Float = 0; // beats per minute or the tempo of the song
-
-	public static var safeZoneOffset = (10 / 60) * 1000;
 
 	public static var crochet:Float = ((60 / bpm) * 1000); // beats in milliseconds
 	public static var stepCrochet:Float = crochet / 4; // steps in milliseconds
@@ -28,6 +31,9 @@ class Conductor
 
 	public static final comparisonThreshold:Float = 20; // the amount of milliseconds of difference before resynchronization
 
+	public static var judgementMap:Map<String, Judgement> = ['sick' => {timing: 45}];
+	public static var msThreshold:Float = 120;
+
 	public static var bpmMap:Map<Float, Float>;
 	public static var soundGroup:FlxTypedGroup<FlxSound>;
 
@@ -35,7 +41,7 @@ class Conductor
 	{
 		boundSong = new FlxSound().loadEmbedded(newSong);
 		if (newVocals != null)
-			boundVocals = new ForeverSoundGroup(newVocals, false);
+			boundVocals = new ForeverSoundGroup(newVocals);
 		boundState = newState;
 
 		soundGroup = new FlxTypedGroup<FlxSound>();
@@ -105,9 +111,6 @@ class Conductor
 				boundState.beatHit();
 				lastBeat = beatPosition;
 			}
-
-			FlxG.watch.addQuick('Song Position', songPosition);
-			FlxG.watch.addQuick('Beat Position', beatPosition);
 		}
 	}
 
@@ -138,7 +141,7 @@ class Conductor
 	public static function resyncTime()
 	{
 		// resynchronization
-		// trace('resyncing song time ${boundSong.time}');
+		trace('resyncing song time ${boundSong.time}');
 		songPosition = boundSong.time;
 		boundSong.play();
 		if (boundVocals != null)
@@ -147,6 +150,6 @@ class Conductor
 			boundVocals.time = songPosition;
 			boundVocals.play();
 		}
-		// trace('new song time ${songPosition}');
+		trace('new song time ${songPosition}');
 	}
 }
