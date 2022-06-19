@@ -45,6 +45,8 @@ class Strumline extends FlxSpriteGroup
 		for (i in 0...keyAmount)
 		{
 			var receptor:Receptor = new Receptor(receptorData, i);
+			receptorData.separation = 160;
+			receptorData.size = 0.7;
 
 			// calculate width
 			receptor.setGraphicSize(Std.int(receptor.width * receptorData.size));
